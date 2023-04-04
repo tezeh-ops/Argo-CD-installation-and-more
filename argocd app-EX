@@ -1,0 +1,23 @@
+piVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: myapp-argo-application
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/tezeh-ops/argocdtest.git   # the repo we want to use in github
+    targetRevision: HEAD
+    path: dev   # this directory we want to use it can be prod or qa or any we want
+  destination: 
+    server: https://kubernetes.default.svc   # this the internal service, since Argocd lives inside of k8s it going to use the internal service as well
+    namespace: myapp    # the namespce of where u will like you pod to be deploy in it can be any of ur choice
+
+  syncPolicy:           
+    syncOptions:
+    - CreateNamespace=true    #the syncpolicy here is creatNamespace=true, meaning if the namespace we pass above does not exist it will creat it 
+
+    automated:
+      selfHeal: true   #here we are automating the process saying that selfhealing=true, meanig if i make achange in my repo, then Argocd need to correct what is happen in my cluster
+      prune: true  # Prune here means if go and delete something in the repo  argocd need to go ahead and do the corrective measures
